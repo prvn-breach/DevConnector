@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const path = require('path');
 
 const app = express();
 
@@ -17,6 +18,16 @@ const posts = require('./routes/api/posts');
 app.use('/api/users', users);
 app.use('/api/profile', profile);
 app.use('/api/posts', posts);
+
+// For production
+if(process.env.NODE_ENV == 'production') {
+    // Set static folder
+    app.use(express.static('client/build'));
+
+    app.get('*', (req, res) => {
+        res.sendFile(__dirname, 'client', 'build', 'index.html');
+    });
+}
 
 // DB config
 const db = require('./config/keys').mongoURI;
